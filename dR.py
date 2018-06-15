@@ -69,6 +69,7 @@ n_outputs = 104  # output is a series of Delta{R}+
 n_layers = 4  # number of stacked LSTM layers
 save_movie = False
 save_res_as_file = True
+reach_to_test_error = 1e-4
 
 
 '''
@@ -229,10 +230,13 @@ def train(step):
     loss_train.append(loss_value)
 
     if step % display_step == 0:
-        plt.close('all')
         print("Epoch:" + "{}".format(step) + " Iteration " + str(step * batch_size) + ", Minibatch Loss= " +
               "{:.6f}".format(loss_value) + ", Minibatch Loss Test= " +
               "{:.6f}".format(loss_value_test))
+
+    if not save_movie:
+        if loss_value <= reach_to_test_error:
+            plt.close('all')  # End the optimization and save result into file if it is activated.
 
 
 # Launch the graph
