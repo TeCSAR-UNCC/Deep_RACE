@@ -69,7 +69,7 @@ n_outputs = 104  # output is a series of Delta{R}+
 n_layers = 4  # number of stacked LSTM layers
 save_movie = False
 save_res_as_file = True
-reach_to_test_error = 1e-4
+reach_to_test_error = 6e-5
 
 
 '''
@@ -136,7 +136,8 @@ def handle_close(evt):
             test_input = y.reshape((1, n_steps, n_input))
             prediction = sess.run(pred, feed_dict={x: test_input})
             # remove the batch size dimensions
-            pred_lst = np.hstack((pred_lst, prediction[0]))
+            pred_lst = np.hstack((pred_lst, y[0]))  # Input Seq
+            pred_lst = np.hstack((pred_lst, prediction[0]))  # Prediction
 
         pred_nump = np.array(pred_lst)
         np.savetxt('res.txt', pred_nump, fmt="%f", newline='\r\n')
