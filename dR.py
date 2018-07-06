@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from __future__ import print_function
 
 from generate_sample import generate_sample
@@ -47,17 +49,12 @@ Inspired by
 """
 
 
-fig = plt.figure()
-ax1 = fig.add_subplot(1, 2, 1)  # Plots train and test losses.
-ax2 = fig.add_subplot(1, 2, 2)  # Plots prediction
-plt.tight_layout(pad=1.5, w_pad=3.0, h_pad=1.0)
-
-
 # Parameters
+data_file =  "Sim_Exp.mat" #"RoIFor5Devs.mat"
+batch_size = 2  # because we have four devices to learn, and one device to test
 learning_rate = 0.003
-training_iters = 2500
+training_iters = 1000
 training_iter_step_down_every = 250000
-batch_size = 4  # because we have four devices to learn, and one device to test
 display_step = 100
 updating_plot = 10
 
@@ -69,7 +66,18 @@ n_outputs = 104  # output is a series of Delta{R}+
 n_layers = 4  # number of stacked LSTM layers
 save_movie = False
 save_res_as_file = True
-reach_to_test_error = 6e-5
+reach_to_test_error = 5e-10
+Monte_Carlo_test = True
+plt.ioff()
+
+
+fig = plt.figure()
+if not Monte_Carlo_test:
+    ax1 = fig.add_subplot(1, 2, 1)  # Plots train and test losses.
+    ax2 = fig.add_subplot(1, 2, 2)  # Plots prediction
+    plt.tight_layout(pad=1.5, w_pad=3.0, h_pad=1.0)
+else:
+    ax1 = fig.add_subplot(1, 1, 1)  # Plots train and test losses.
 
 
 '''
@@ -123,24 +131,26 @@ merged = tf.summary.merge_all()
 
 
 def handle_close(evt):
-    if save_res_as_file:
-        print("Writing to 'res.txt' file...")
-        total_dev36 = 21179
-        how_many_seg = int(total_dev36 / (n_steps + n_outputs))
+    if not Monte_Carlo_test:
+        print("Mean Test Loss= " + "{:.6f}".format(np.mean(loss_test)))
+        if save_res_as_file:
+            print("Writing to 'res.txt' file...")
+            total_dev36 = 21179
+            how_many_seg = int(total_dev36 / (n_steps + n_outputs))
 
-        pred_lst = np.array([])
-        for i in range(how_many_seg):
-            t, y, next_t, expected_y = generate_sample(filename="RoIFor5Devs.mat",
-                                                       batch_size=1, samples=n_steps, predict=n_outputs,
-                                                       start_from=i * (n_steps + n_outputs), consider_dev36=True)
-            test_input = y.reshape((1, n_steps, n_input))
-            prediction = sess.run(pred, feed_dict={x: test_input})
-            # remove the batch size dimensions
-            pred_lst = np.hstack((pred_lst, y[0]))  # Input Seq
-            pred_lst = np.hstack((pred_lst, prediction[0]))  # Prediction
+            pred_lst = np.array([])
+            for i in range(how_many_seg):
+                t, y, next_t, expected_y = generate_sample(filename=data_file,
+                                                           batch_size=1, samples=n_steps, predict=n_outputs,
+                                                           start_from=i * (n_steps + n_outputs), consider_dev36=True)
+                test_input = y.reshape((1, n_steps, n_input))
+                prediction = sess.run(pred, feed_dict={x: test_input})
+                # remove the batch size dimensions
+                pred_lst = np.hstack((pred_lst, y[0]))  # Input Seq
+                pred_lst = np.hstack((pred_lst, prediction[0]))  # Prediction
 
-        pred_nump = np.array(pred_lst)
-        np.savetxt('res.txt', pred_nump, fmt="%f", newline='\r\n')
+            pred_nump = np.array(pred_lst)
+            np.savetxt('res.txt', pred_nump, fmt="%f", newline='\r\n')
 
 
 fig.canvas.mpl_connect('close_event', handle_close)
@@ -163,40 +173,46 @@ def animate(k):
         ax1.set_ylim(0, 1)
         ax1.set_xlim(0, training_iters)
 
-    if step_global % (updating_plot) == 0:
-        ax2.clear()
-        total_dev36 = 21179
-        how_many_seg = int(total_dev36 / (n_steps + n_outputs))
+    if not Monte_Carlo_test:
+        if step_global % (updating_plot) == 0:
+            ax2.clear()
+            total_dev36 = 21179
+            how_many_seg = int(total_dev36 / (n_steps + n_outputs))
 
-        for i in range(how_many_seg):
-            t, y, next_t, expected_y = generate_sample(filename="RoIFor5Devs.mat",
-                                                       batch_size=1, samples=n_steps, predict=n_outputs,
-                                                       start_from=i * (n_steps + n_outputs), consider_dev36=True)
-            test_input = y.reshape((1, n_steps, n_input))
-            prediction = sess.run(pred, feed_dict={x: test_input})
-            # remove the batch size dimensions
-            t = t.squeeze()
-            y = y.squeeze()
-            next_t = next_t.squeeze()
-            prediction = prediction.squeeze()
-            if i == (how_many_seg - 1):
-                ax2.plot(t, y, color='black', label='Input')
-                ax2.plot(np.append(t[-1], next_t), np.append(y[-1], expected_y), color='green', linestyle='-.',
-                            label='Real')
-                ax2.plot(np.append(t[-1], next_t), np.append(y[-1], prediction), color='red', linestyle=':',
-                            label='Predicted')
-                # plt.ylim([-1, 1])
-                ax2.legend(loc='upper left')
-                ax2.set_xlabel('Samples')
-                ax2.set_ylabel('$\Delta R$')
-                ax2.set_ylim(-0.003, 0.0550)
-            else:
-                ax2.plot(t, y, color='black')
-                ax2.plot(np.append(t[-1], next_t), np.append(y[-1], expected_y), color='green', linestyle='-.')
-                ax2.plot(np.append(t[-1], next_t), np.append(y[-1], prediction), color='red', linestyle=':')
-                ax2.set_ylim(-0.003, 0.0550)
+            for i in range(how_many_seg):
+                t, y, next_t, expected_y = generate_sample(filename=data_file,
+                                                           batch_size=1, samples=n_steps, predict=n_outputs,
+                                                           start_from=i * (n_steps + n_outputs), consider_dev36=True)
+                test_input = y.reshape((1, n_steps, n_input))
+                prediction = sess.run(pred, feed_dict={x: test_input})
+                # remove the batch size dimensions
+                t = t.squeeze()
+                y = y.squeeze()
+                next_t = next_t.squeeze()
+                prediction = prediction.squeeze()
+                if i == (how_many_seg - 1):
+                    ax2.plot(t, y, color='black', label='Input')
+                    ax2.plot(np.append(t[-1], next_t), np.append(y[-1], expected_y), color='green', linestyle='-.',
+                                label='Real')
+                    ax2.plot(np.append(t[-1], next_t), np.append(y[-1], prediction), color='red', linestyle=':',
+                                label='Predicted')
+                    # plt.ylim([-1, 1])
+                    ax2.legend(loc='upper left')
+                    ax2.set_xlabel('Samples')
+                    ax2.set_ylabel('$\Delta R$')
+                    ax2.set_ylim(-0.003, 0.0550)
+                else:
+                    ax2.plot(t, y, color='black')
+                    ax2.plot(np.append(t[-1], next_t), np.append(y[-1], expected_y), color='green', linestyle='-.')
+                    ax2.plot(np.append(t[-1], next_t), np.append(y[-1], prediction), color='red', linestyle=':')
+                    ax2.set_ylim(-0.003, 0.0550)
 
     step_global += 1
+
+    if Monte_Carlo_test:
+        if step_global == training_iters:
+            print("Min Test Loss= " + "{:.6f}".format(min(loss_test)))
+            plt.close('all')
 
 
 loss_test = []
@@ -207,7 +223,7 @@ def train(step):
     current_learning_rate = learning_rate
     current_learning_rate *= 0.1 ** ((step * batch_size) // training_iter_step_down_every)
 
-    _, batch_x, __, batch_y = generate_sample(filename="RoIFor5Devs.mat",
+    _, batch_x, __, batch_y = generate_sample(filename=data_file,
                                               batch_size=batch_size, samples=n_steps, predict=n_outputs)
 
     batch_x = batch_x.reshape((batch_size, n_steps, n_input))
@@ -218,7 +234,7 @@ def train(step):
                                                                             lr: current_learning_rate})
     writer.add_summary(summary, step)
 
-    _, batch_x_test, __, batch_y_test = generate_sample(filename="RoIFor5Devs.mat",
+    _, batch_x_test, __, batch_y_test = generate_sample(filename=data_file,
                                                         batch_size=1, samples=n_steps, predict=n_outputs,
                                                         consider_dev36=True)
 

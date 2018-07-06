@@ -52,7 +52,7 @@ if __name__ == '__main__':
     samples = 100
     predict = 50
 
-    t, y, t_next, y_next = generate_sample(filename="RoIFor5Devs.mat", batch_size=1, consider_dev36=True)
+    t, y, t_next, y_next = generate_sample(filename="RoIFor5Devs.mat", batch_size=5, consider_dev36=True)
 
     n_tests = t.shape[0]
     for i in range(0, n_tests):
