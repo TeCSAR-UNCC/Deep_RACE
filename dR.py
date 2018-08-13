@@ -50,8 +50,8 @@ Inspired by
 
 
 # Parameters
-data_file =  "Sim_Exp.mat" #"RoIFor5Devs.mat"
-batch_size = 2  # because we have four devices to learn, and one device to test
+data_file = "RoIFor5Devs.mat"
+batch_size = 4  # because we have four devices to learn, and one device to test
 learning_rate = 0.003
 training_iters = 1000
 training_iter_step_down_every = 250000
@@ -61,13 +61,22 @@ updating_plot = 10
 # Network Parameters
 n_input = 1  # Delta{R}
 n_steps = 20  # time steps
-n_hidden = 64  # Num of features
+n_hidden = 32  # Num of features
 n_outputs = 104  # output is a series of Delta{R}+
 n_layers = 4  # number of stacked LSTM layers
+reach_to_test_error = 0.00005
+
+test_device = [3] # 0 -> dev36, 1 -> dev12, 2 -> dev38, 3 -> dev11, 4 -> dev9
+device_name = ['dev36', 'dev12', 'dev38', 'dev11', 'dev9']
+
 save_movie = False
 save_res_as_file = True
-reach_to_test_error = 5e-10
-Monte_Carlo_test = True
+Monte_Carlo_test = False
+
+loss_test = []
+loss_train = []
+min_test_mse = float('Inf')
+
 plt.ioff()
 
 
@@ -129,20 +138,33 @@ init = tf.global_variables_initializer()
 
 merged = tf.summary.merge_all()
 
+# Add ops to save and restore all the variables.
+saver = tf.train.Saver()
+save_file_name_model = './model_' + device_name[test_device[0]] + '.ckpt'
+
 
 def handle_close(evt):
     if not Monte_Carlo_test:
         print("Mean Test Loss= " + "{:.6f}".format(np.mean(loss_test)))
+
+    if min_test_mse != float('Inf'):
+        # Restore variables from disk.
+        saver.restore(sess, save_file_name_model)
+        print('Model restored.')
+
         if save_res_as_file:
-            print("Writing to 'res.txt' file...")
-            total_dev36 = 21179
-            how_many_seg = int(total_dev36 / (n_steps + n_outputs))
+            print("Writing to res_" + device_name[test_device[0]] + ".txt file...")
+
+            _, _, _, _, l = generate_sample(filename=data_file, batch_size=1, samples=n_steps, predict=n_outputs, test=True, test_set=test_device)
+
+            total_dev_len = l[0]
+            how_many_seg = int(total_dev_len / (n_steps + n_outputs))
 
             pred_lst = np.array([])
             for i in range(how_many_seg):
-                t, y, next_t, expected_y = generate_sample(filename=data_file,
+                t, y, next_t, expected_y, _ = generate_sample(filename=data_file,
                                                            batch_size=1, samples=n_steps, predict=n_outputs,
-                                                           start_from=i * (n_steps + n_outputs), consider_dev36=True)
+                                                           start_from=i * (n_steps + n_outputs), test=True, test_set=test_device)
                 test_input = y.reshape((1, n_steps, n_input))
                 prediction = sess.run(pred, feed_dict={x: test_input})
                 # remove the batch size dimensions
@@ -150,11 +172,10 @@ def handle_close(evt):
                 pred_lst = np.hstack((pred_lst, prediction[0]))  # Prediction
 
             pred_nump = np.array(pred_lst)
-            np.savetxt('res.txt', pred_nump, fmt="%f", newline='\r\n')
+            np.savetxt('res_'+ device_name[test_device[0]] +'.txt', pred_nump, fmt="%f", newline='\r\n')
 
 
 fig.canvas.mpl_connect('close_event', handle_close)
-
 
 def animate(k):
 
@@ -176,13 +197,15 @@ def animate(k):
     if not Monte_Carlo_test:
         if step_global % (updating_plot) == 0:
             ax2.clear()
-            total_dev36 = 21179
-            how_many_seg = int(total_dev36 / (n_steps + n_outputs))
+            _, _, _, _, l = generate_sample(filename=data_file, batch_size=1, samples=n_steps, predict=n_outputs, test=True, test_set=test_device)
+
+            total_dev_len = l[0]
+            how_many_seg = int(total_dev_len / (n_steps + n_outputs))
 
             for i in range(how_many_seg):
-                t, y, next_t, expected_y = generate_sample(filename=data_file,
+                t, y, next_t, expected_y, _ = generate_sample(filename=data_file,
                                                            batch_size=1, samples=n_steps, predict=n_outputs,
-                                                           start_from=i * (n_steps + n_outputs), consider_dev36=True)
+                                                           start_from=i * (n_steps + n_outputs), test=True, test_set=test_device)
                 test_input = y.reshape((1, n_steps, n_input))
                 prediction = sess.run(pred, feed_dict={x: test_input})
                 # remove the batch size dimensions
@@ -200,12 +223,12 @@ def animate(k):
                     ax2.legend(loc='upper left')
                     ax2.set_xlabel('Samples')
                     ax2.set_ylabel('$\Delta R$')
-                    ax2.set_ylim(-0.003, 0.0550)
+                    ax2.set_ylim(-0.02, 0.0550)
                 else:
                     ax2.plot(t, y, color='black')
                     ax2.plot(np.append(t[-1], next_t), np.append(y[-1], expected_y), color='green', linestyle='-.')
                     ax2.plot(np.append(t[-1], next_t), np.append(y[-1], prediction), color='red', linestyle=':')
-                    ax2.set_ylim(-0.003, 0.0550)
+                    ax2.set_ylim(-0.02, 0.0550)
 
     step_global += 1
 
@@ -215,15 +238,15 @@ def animate(k):
             plt.close('all')
 
 
-loss_test = []
-loss_train = []
-
 
 def train(step):
+    
+    global min_test_mse
+
     current_learning_rate = learning_rate
     current_learning_rate *= 0.1 ** ((step * batch_size) // training_iter_step_down_every)
 
-    _, batch_x, __, batch_y = generate_sample(filename=data_file,
+    _, batch_x, __, batch_y,_ = generate_sample(filename=data_file,
                                               batch_size=batch_size, samples=n_steps, predict=n_outputs)
 
     batch_x = batch_x.reshape((batch_size, n_steps, n_input))
@@ -234,14 +257,17 @@ def train(step):
                                                                             lr: current_learning_rate})
     writer.add_summary(summary, step)
 
-    _, batch_x_test, __, batch_y_test = generate_sample(filename=data_file,
-                                                        batch_size=1, samples=n_steps, predict=n_outputs,
-                                                        consider_dev36=True)
+    _, batch_x_test, __, batch_y_test,_ = generate_sample(filename=data_file, batch_size=1, samples=n_steps, predict=n_outputs, test=True)
 
     batch_x_test = batch_x_test.reshape((1, n_steps, n_input))
     batch_y_test = batch_y_test.reshape((1, n_outputs))
 
     loss_value_test, summary = sess.run([loss, merged], feed_dict={x: batch_x_test, y: batch_y_test})
+
+    if loss_value_test < min_test_mse:
+        save_path = saver.save(sess, save_file_name_model)
+        print("Model saved: " + save_path)
+        min_test_mse = loss_value_test
 
     loss_test.append(loss_value_test)
     loss_train.append(loss_value)

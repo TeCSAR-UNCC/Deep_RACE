@@ -3,8 +3,8 @@ from typing import Optional, Tuple
 import scipy.io as matloader
 
 
-def generate_sample(filename, batch_size: int = 1, predict: int = 50, samples: int = 100,
-                    consider_dev36: bool = False, start_from: int = -1) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+def generate_sample(filename, batch_size: int = 4, predict: int = 50, samples: int = 100,
+                    test_set: list = [0], start_from: int = -1, test: bool = False) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Generates data samples.
 
@@ -24,24 +24,30 @@ def generate_sample(filename, batch_size: int = 1, predict: int = 50, samples: i
     FT = np.empty((batch_size, predict))
     FY = np.empty((batch_size, predict))
 
-    select_from_2_to_5 = 1
-    if consider_dev36:
-        select_from_2_to_5 = 0
+    arr_length = []
 
-    for i in range(batch_size):
-        total_data = len(mat['RoI_All'][0, i + select_from_2_to_5][0])
+    training_list = set([0, 1, 2, 3, 4]) - set(test_set)
+    if test > 0:
+        action_set = test_set
+    else:
+        action_set = training_list
+    jdx = 0
+    for i in action_set:
+        total_data = len(mat['RoI_All'][0, i][0])
+        arr_length.append(total_data)
 
         idx = np.random.random_integers(total_data - (samples + predict))
 
         if -1 < start_from < total_data - (samples + predict):
             idx = start_from
 
-        T[i, :] = range(idx, idx + samples)
-        Y[i, :] = np.transpose(mat['RoI_All'][0, i + select_from_2_to_5][0][idx:idx + samples])
-        FT[i, :] = range(idx + samples, idx + samples + predict)
-        FY[i, :] = np.transpose(mat['RoI_All'][0, i + select_from_2_to_5][0][idx + samples:idx + samples + predict])
+        T [jdx, :] = range(idx, idx + samples)
+        Y [jdx, :] = np.transpose(mat['RoI_All'][0, i][0][idx:idx + samples])
+        FT[jdx, :] = range(idx + samples, idx + samples + predict)
+        FY[jdx, :] = np.transpose(mat['RoI_All'][0, i][0][idx + samples:idx + samples + predict])
+        jdx += 1
 
-    return T, Y, FT, FY
+    return T, Y, FT, FY, arr_length
 
 
 if __name__ == '__main__':
@@ -52,7 +58,7 @@ if __name__ == '__main__':
     samples = 100
     predict = 50
 
-    t, y, t_next, y_next = generate_sample(filename="RoIFor5Devs.mat", batch_size=5, consider_dev36=True)
+    t, y, t_next, y_next, lengths = generate_sample(filename="RoIFor5Devs.mat", batch_size=1, test=True)
 
     n_tests = t.shape[0]
     for i in range(0, n_tests):
