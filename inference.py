@@ -127,6 +127,10 @@ saver = tf.train.Saver()
 test_device = [1] # 0 -> dev36, 1 -> dev12, 2 -> dev38, 3 -> dev11, 4 -> dev9
 TX2_Board_Power = False
 
+config = tf.ConfigProto(
+        device_count = {'GPU': 1}
+    )
+
 if __name__ == "__main__":
 
     with tf.Session() as sess:

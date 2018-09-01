@@ -32,7 +32,7 @@ def generate_sample(filename, batch_size: int = 4, predict: int = 50, samples: i
     else:
         action_set = training_list
     jdx = 0
-    for i in action_set:
+    for i in list(action_set)[0:batch_size]:
         total_data = len(mat['RoI_All'][0, i][0])
         arr_length.append(total_data)
 
