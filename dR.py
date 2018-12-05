@@ -60,18 +60,18 @@ updating_plot = 10
 
 # Network Parameters
 n_input = 1  # Delta{R}
-n_steps = 20  # time steps
-n_hidden = 32  # Num of features
+n_steps = 21  # time steps
+n_hidden = 64  # Num of features
 n_outputs = 104  # output is a series of Delta{R}+
 n_layers = 4  # number of stacked LSTM layers
 reach_to_test_error = 0.00005
 
-test_device = [3] # 0 -> dev36, 1 -> dev12, 2 -> dev38, 3 -> dev11, 4 -> dev9
-device_name = ['dev36', 'dev12', 'dev38', 'dev11', 'dev9']
+test_device = [0] # 0 -> dev36, 1 -> dev12, 2 -> dev38, 3 -> dev11, 4 -> dev9
+device_name = ['Dev36', 'dev12', 'dev38', 'dev11', 'dev9']
 
 save_movie = False
-save_res_as_file = True
-Monte_Carlo_test = False
+save_res_as_file = False
+Monte_Carlo_test = True
 
 loss_test = []
 loss_train = []
@@ -223,12 +223,12 @@ def animate(k):
                     ax2.legend(loc='upper left')
                     ax2.set_xlabel('Samples')
                     ax2.set_ylabel('$\Delta R$')
-                    ax2.set_ylim(-0.02, 0.0550)
+                    ax2.set_ylim(0.01, 0.0550)
                 else:
                     ax2.plot(t, y, color='black')
                     ax2.plot(np.append(t[-1], next_t), np.append(y[-1], expected_y), color='green', linestyle='-.')
                     ax2.plot(np.append(t[-1], next_t), np.append(y[-1], prediction), color='red', linestyle=':')
-                    ax2.set_ylim(-0.02, 0.0550)
+                    ax2.set_ylim(0.01, 0.0550)
 
     step_global += 1
 
