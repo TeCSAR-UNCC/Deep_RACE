@@ -17,18 +17,18 @@ You only need to clone the Deep RACE repository:
 git clone https://github.com/TeCSAR-UNCC/Deep_RACE
 ```
 ## Running the test
-Change the path to the `Deep_Race` directory and run the applicaztion:
+Change the path to the `Deep_Race` directory and run the application:
 ```bash
 cd Deep_RACE
 ./dR.py
 ```
 ### Testing different MOSFET devices
-You can test different devices from `RoIFor5Devs.mat` by altering [this line](https://github.com/TeCSAR-UNCC/Deep_RACE/blob/faa2f1aed804ba607b24fe0e2e6b9eb724fb0982/dR.py#L69) in the `./dR.py`
+You can test different devices from `RoIFor5Devs.mat` by altering [this line](https://github.com/TeCSAR-UNCC/Deep_RACE/blob/faa2f1aed804ba607b24fe0e2e6b9eb724fb0982/dR.py#L69) in the `./dR.py`.
 
 ## Author
 * Reza Baharani:  *Python code* - [My personal webpage](https://rbaharani.com/)
 ## License
-This project is licensed under the MIT License - see the [LICENSE](https://raw.githubusercontent.com/TeCSAR-UNCC/Deep_RACE/master/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](https://raw.githubusercontent.com/TeCSAR-UNCC/Deep_RACE/master/LICENSE) file for details.
 ## Acknowledgments
 
 The five Si-MOSFET ΔR<sub>ds(on)</sub> are extracted from NASA MOSFET Thermal Overstress Aging Data Set which is available [here](https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/). Please cite their paper if you are going to use their data samples. Here is its BiBTeX:
