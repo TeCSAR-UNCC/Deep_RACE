@@ -29,7 +29,7 @@ All the training models will be saved automatically in `./inference_models/` fol
 The `./train.py` will generate and save the predition out put in a text file. The file name is based on the selected MOSFET device number. As an instance, a text file with the name of `./prediction_output/res_dev2.txt` will be generated for `dev#2`.
 
 ### Testing different MOSFET devices
-You can test different devices from `RoIFor5Devs.mat` by altering [this line](https://github.com/TeCSAR-UNCC/Deep_RACE/blob/faa2f1aed804ba607b24fe0e2e6b9eb724fb0982/dR.py#L69) in the `./train.py`.
+You can test different devices from `RoIFor5Devs.mat` by altering [this line](https://github.com/TeCSAR-UNCC/Deep_RACE/blob/68688f2b89a651f0985364c74c2ae949a696338b/train.py#L69) in the `./train.py`.
 
 ## Author
 * Reza Baharani:  *Python code* - [My personal webpage](https://rbaharani.com/)
