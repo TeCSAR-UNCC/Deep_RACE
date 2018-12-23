@@ -3,7 +3,7 @@
 
 Deep RACE is a real-time reliability modeling and assessment of power semiconductor devices embedded into a wide range of smart power electronics systems. Deep RACE departures from classical learning and statistical modeling to deep learning based data analytics, combined with full system integration for scalable real-time reliability modeling and assessment. In this regard, it leverages the Long Short-Term Memory (LSTM) networks as a branch of Recurrent Neural Networks (RNN) to aggregate reliability across many power converters with similar underlying physic. Also, It offers real-time online assessment by selectively combining the aggregated training model with device-specific behaviors in the field.
 ## Prerequisites
-First make sure you have already install pip3, Tkinter, and git tools:
+First make sure you have already installed pip3, Tkinter, and git tools:
 ``` bash
 sudo apt install git python3-pip python3-tk
 ```
@@ -16,14 +16,20 @@ You only need to clone the Deep RACE repository:
 ```bash
 git clone https://github.com/TeCSAR-UNCC/Deep_RACE
 ```
-## Running the test
-Change the path to the `Deep_Race` directory and run the application:
+## Training the network models
+Change the path to the `Deep_RACE` directory and run the `train.py`:
 ```bash
 cd Deep_RACE
-./dR.py
+./train.py
 ```
+
+All the training models will be saved automatically in `./inference_models/` folder. You can load them by running `inference.py` file.
+
+### Prediction output
+The `./train.py` will generate and save the predition out put in a text file. The file name is based on the selected MOSFET device number. As an instance, a text file with the name of `./prediction_output/res_dev2.txt` will be generated for `dev#2`.
+
 ### Testing different MOSFET devices
-You can test different devices from `RoIFor5Devs.mat` by altering [this line](https://github.com/TeCSAR-UNCC/Deep_RACE/blob/faa2f1aed804ba607b24fe0e2e6b9eb724fb0982/dR.py#L69) in the `./dR.py`.
+You can test different devices from `RoIFor5Devs.mat` by altering [this line](https://github.com/TeCSAR-UNCC/Deep_RACE/blob/faa2f1aed804ba607b24fe0e2e6b9eb724fb0982/dR.py#L69) in the `./train.py`.
 
 ## Author
 * Reza Baharani:  *Python code* - [My personal webpage](https://rbaharani.com/)

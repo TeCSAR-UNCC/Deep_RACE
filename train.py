@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 
-from generate_sample import generate_sample
+from utility.generate_sample import generate_sample
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,7 +50,7 @@ Inspired by
 
 
 # Parameters
-data_file = "RoIFor5Devs.mat"
+data_file = "./utility/RoIFor5Devs.mat"
 batch_size = 4  # because we have four devices to learn, and one device to test
 learning_rate = 0.003
 training_iters = 1000
@@ -67,7 +67,16 @@ n_layers = 4  # number of stacked LSTM layers
 reach_to_test_error = 0.00005
 
 test_device = [3] # 0 -> dev36, 1 -> dev12, 2 -> dev38, 3 -> dev11, 4 -> dev9
-device_name = ['dev36', 'dev12', 'dev38', 'dev11', 'dev9']
+device_name = ['dev4', 'dev3', 'dev5', 'dev2', 'dev1']
+
+'''
+Based on the paper:
+    dev9  -> dev1
+    dev36 -> dev4
+    dev12 -> dev3
+    dev38 -> dev5
+    dev11 -> dev2
+'''
 
 save_movie = False
 save_res_as_file = True
@@ -140,7 +149,7 @@ merged = tf.summary.merge_all()
 
 # Add ops to save and restore all the variables.
 saver = tf.train.Saver()
-save_file_name_model = './model_' + device_name[test_device[0]] + '.ckpt'
+save_file_name_model = './inference_models/model_' + device_name[test_device[0]] + '.ckpt'
 
 
 def handle_close(evt):
@@ -153,7 +162,7 @@ def handle_close(evt):
         print('Model restored.')
 
         if save_res_as_file:
-            print("Writing to res_" + device_name[test_device[0]] + ".txt file...")
+            print("Writing to ./prediction_output/res_" + device_name[test_device[0]] + ".txt file...")
 
             _, _, _, _, l = generate_sample(filename=data_file, batch_size=1, samples=n_steps, predict=n_outputs, test=True, test_set=test_device)
 
@@ -172,7 +181,7 @@ def handle_close(evt):
                 pred_lst = np.hstack((pred_lst, prediction[0]))  # Prediction
 
             pred_nump = np.array(pred_lst)
-            np.savetxt('res_'+ device_name[test_device[0]] +'.txt', pred_nump, fmt="%f", newline='\r\n')
+            np.savetxt('./prediction_output/res_'+ device_name[test_device[0]] +'.txt', pred_nump, fmt="%f", newline='\r\n')
 
 
 fig.canvas.mpl_connect('close_event', handle_close)

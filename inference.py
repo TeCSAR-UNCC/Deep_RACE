@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 
-from generate_sample import generate_sample
+from utility.generate_sample import generate_sample
 
 import numpy as np
 # noinspection PyUnresolvedReferences
@@ -48,7 +48,7 @@ Inspired by
 
 
 # Parameters
-data_file =  "RoIFor5Devs.mat"
+data_file =  "./utility/RoIFor5Devs.mat"
 batch_size = 4  # because we have four devices to learn, and one device to test
 learning_rate = 0.003
 training_iters = 1000
@@ -121,7 +121,7 @@ init = tf.global_variables_initializer()
 merged = tf.summary.merge_all()
 
 load_model = True
-model_file_name = './model_dev12.ckpt'
+model_file_name = './inference_models/model_dev2.ckpt'
 saver = tf.train.Saver()
 
 test_device = [1] # 0 -> dev36, 1 -> dev12, 2 -> dev38, 3 -> dev11, 4 -> dev9
