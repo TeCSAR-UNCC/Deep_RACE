@@ -34,7 +34,7 @@ You can test different devices from `RoIFor5Devs.mat` by altering [this line](ht
 ## Author
 * Reza Baharani:  *Python code* - [My personal webpage](https://rbaharani.com/)
 ## License
-This project is licensed under the MIT License - see the [LICENSE](https://raw.githubusercontent.com/TeCSAR-UNCC/Deep_RACE/master/LICENSE) file for details.
+Copyright (c) 2018, University of North Carolina at Charlotte All rights reserved. - see the [LICENSE](https://raw.githubusercontent.com/TeCSAR-UNCC/Deep_RACE/master/LICENSE) file for details.
 ## Acknowledgments
 
 The five Si-MOSFET ΔR<sub>ds(on)</sub> are extracted from NASA MOSFET Thermal Overstress Aging Data Set which is available [here](https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/). Please cite their paper if you are going to use their data samples. Here is its BiBTeX:
