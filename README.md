@@ -20,7 +20,7 @@ git clone https://github.com/TeCSAR-UNCC/Deep_RACE
 Change the path to the `Deep_RACE` directory and run the `train.py`:
 ```bash
 cd Deep_RACE
-./train.py
+python3 ./train.py
 ```
 
 All the training models will be saved automatically in `./inference_models/` folder. You can load them by running `inference.py` file.
