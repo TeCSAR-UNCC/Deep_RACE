@@ -31,13 +31,31 @@ The `./train.py` will generate and save the predition out put in a text file. Th
 ### Testing different MOSFET devices
 You can test different devices from `RoIFor5Devs.mat` by altering [this line](https://github.com/TeCSAR-UNCC/Deep_RACE/blob/68688f2b89a651f0985364c74c2ae949a696338b/train.py#L69) in the `./train.py`.
 
+
+## Citing Deep RACE
+Please cite the Deep RACE if it helps your research work. Please note that it is published for early access on IEEE Xplore Didigtal Libabry (R) at this moment. Please refer to this [link](https://ieeexplore.ieee.org/document/8629973) for an up-to-date citation BibTeX if needed.
+```
+@ARTICLE{8629973, 
+author={M. Baharani and M. Biglarbegian and B. Parkhideh and H. Tabkhi}, 
+journal={IEEE Internet of Things Journal}, 
+title={Real-time Deep Learning at the Edge for Scalable Reliability Modeling of Si-MOSFET Power Electronics Converters}, 
+year={2019}, 
+volume={}, 
+number={}, 
+pages={1-1}, 
+keywords={Deep Learning;High-Frequency Power Converter;Long Short-Term Memory (LSTM);MOSFET;Reliability Modeling.}, 
+doi={10.1109/JIOT.2019.2896174}, 
+ISSN={2327-4662}, 
+month={},}
+```
+
 ## Author
 * Reza Baharani:  *Python code* - [My personal webpage](https://rbaharani.com/)
 ## License
 Copyright (c) 2018, University of North Carolina at Charlotte All rights reserved. - see the [LICENSE](https://raw.githubusercontent.com/TeCSAR-UNCC/Deep_RACE/master/LICENSE) file for details.
 ## Acknowledgments
 
-The five Si-MOSFET ΔR<sub>ds(on)</sub> are extracted from NASA MOSFET Thermal Overstress Aging Data Set which is available [here](https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/). Please cite their paper if you are going to use their data samples. Here is its BiBTeX:
+The five Si-MOSFET ΔR<sub>ds(on)</sub> are extracted from NASA MOSFET Thermal Overstress Aging Data Set which is available [here](https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/). Please cite their paper if you are going to use their data samples. Here is its BibTeX:
 ```
 @article{celaya2011prognostics,
 title={{Prognostics of power {MOSFET}s under thermal stress accelerated aging using data-driven and model-based methodologies}},
