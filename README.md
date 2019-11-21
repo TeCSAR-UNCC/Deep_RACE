@@ -33,20 +33,20 @@ You can test different devices from `RoIFor5Devs.mat` by altering [this line](ht
 
 
 ## Citing Deep RACE
-Please cite the Deep RACE if it helps your research work. Please note that it is published for early access on IEEE Xplore Didigtal Libabry (R) at this moment. Please refer to this [link](https://ieeexplore.ieee.org/document/8629973) for an up-to-date citation BibTeX if needed.
+Please cite the Deep RACE if it helps your research work.
 ```
-@ARTICLE{8629973, 
-author={M. Baharani and M. Biglarbegian and B. Parkhideh and H. Tabkhi}, 
-journal={IEEE Internet of Things Journal}, 
-title={Real-time Deep Learning at the Edge for Scalable Reliability Modeling of Si-MOSFET Power Electronics Converters}, 
-year={2019}, 
-volume={}, 
-number={}, 
-pages={1-1}, 
-keywords={Deep Learning;High-Frequency Power Converter;Long Short-Term Memory (LSTM);MOSFET;Reliability Modeling.}, 
-doi={10.1109/JIOT.2019.2896174}, 
-ISSN={2327-4662}, 
-month={},}
+@ARTICLE{8629973,
+author={M. {Baharani} and M. {Biglarbegian} and B. {Parkhideh} and H. {Tabkhi}},
+journal={IEEE Internet of Things Journal},
+title={Real-Time Deep Learning at the Edge for Scalable Reliability Modeling of Si-MOSFET Power Electronics Converters},
+year={2019},
+volume={6},
+number={5},
+pages={7375-7385},
+keywords={electronic engineering computing;Internet of Things;Kalman filters;MOSFET;neural nets;power aware computing;power convertors;power electronics;real-time systems;reliability;scalable decentralized devices-specific reliability monitoring;MOSFET convertors;Internet-of-Things devices;real-time deep learning processing capabilities;Deep RACE solution;MOSFET data;1.87-W computing power;edge IoT device;scalable reliability modeling;advanced high-frequency power converters;active reliability assessment;power electronic devices;real-time reliability modeling;high-frequency MOSFET power electronic converters;edge node;real-time reliability awareness;deep learning algorithmic solution;collective reliability training;collective MOSFET converters;device resistance changes;edge-to-cloud solution;Si-MOSFET power electronics converters;deep learning reliability awareness;Kalman filter;particle filter;Reliability;Real-time systems;Deep learning;MOSFET;Power electronics;Predictive models;Degradation;Deep learning;high-frequency power converter;long short-term memory (LSTM);MOSFET;reliability modeling},
+doi={10.1109/JIOT.2019.2896174},
+ISSN={2372-2541},
+month={Oct},}
 ```
 
 ## Author
